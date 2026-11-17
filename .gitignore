@@ -1,0 +1,8 @@
+.Rhistory
+.RData
+.DS_Store
+Rplots.pdf
+outputs/
+data/prices/
+__pycache__/
+*.pyc
