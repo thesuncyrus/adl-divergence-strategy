@@ -1,5 +1,6 @@
+source("config.R")
 # Long-only divergence rules with 1,000-share additions and full exits.
-build_strategy <- function(name, window = 120, order_quantity = 1000) {
+build_strategy <- function(name, window = adl_config$default_window, order_quantity = adl_config$order_quantity) {
   s <- quantstrat::strategy(name)
   s <- quantstrat::add.indicator(s, "Accumulation_Distribution_Line",
     arguments = list(stock_data = quote(mktdata)), label = "ADL")
@@ -24,15 +25,15 @@ build_strategy <- function(name, window = 120, order_quantity = 1000) {
   s <- quantstrat::add.signal(s, "sigFormula",
     arguments = list(formula = "Price_Downtrend & ADL_Uptrend", cross = TRUE), label = "Buy")
   s <- quantstrat::add.rule(s, "ruleSignal", arguments = list(sigcol = "Buy", sigval = TRUE,
-    orderqty = order_quantity, ordertype = "market", orderside = "long", prefer = "Open",
-    replace = FALSE, TxnFees = 0), type = "enter")
+    orderqty = order_quantity, ordertype = "market", orderside = "long", prefer = adl_config$execution_price,
+    replace = FALSE, TxnFees = adl_config$transaction_fees), type = "enter")
   s <- quantstrat::add.rule(s, "ruleSignal", arguments = list(sigcol = "Sell", sigval = TRUE,
-    orderqty = "all", ordertype = "market", orderside = "long", prefer = "Open",
-    replace = FALSE, TxnFees = 0), type = "exit")
+    orderqty = "all", ordertype = "market", orderside = "long", prefer = adl_config$execution_price,
+    replace = FALSE, TxnFees = adl_config$transaction_fees), type = "exit")
   s
 }
 
-run_backtest <- function(prices, window = 120, out = "outputs/120", initial_equity = 1000000) {
+run_backtest <- function(prices, window = adl_config$default_window, out = "outputs/120", initial_equity = adl_config$initial_equity) {
   dir.create(out, recursive = TRUE, showWarnings = FALSE)
   symbols <- names(prices)
   name <- paste0("adl_", window, "_", length(symbols))
@@ -40,9 +41,9 @@ run_backtest <- function(prices, window = 120, out = "outputs/120", initial_equi
   FinancialInstrument::currency("USD")
   FinancialInstrument::stock(symbols, currency = "USD", multiplier = 1)
   for (symbol in symbols) assign(symbol, prices[[symbol]], envir = .GlobalEnv)
-  blotter::initPortf(name, symbols = symbols, initDate = "1950-01-01")
-  blotter::initAcct(name, portfolios = name, initEq = initial_equity, initDate = "1950-01-01")
-  quantstrat::initOrders(portfolio = name, initDate = "1950-01-01")
+  blotter::initPortf(name, symbols = symbols, initDate = adl_config$initialization_date)
+  blotter::initAcct(name, portfolios = name, initEq = initial_equity, initDate = adl_config$initialization_date)
+  quantstrat::initOrders(portfolio = name, initDate = adl_config$initialization_date)
   s <- build_strategy(name, window)
   for (symbol in symbols) {
     indicators <- quantstrat::applyIndicators(s, prices[[symbol]])

@@ -1,7 +1,8 @@
+source("config.R")
 # Retrieve OHLCV/adjusted prices directly from Yahoo Finance.
-project_symbols <- c("KO", "NVDA", "AMZN", "IBM", "GOOG")
+project_symbols <- adl_config$symbols
 read_or_download_prices <- function(symbols = project_symbols, cache = "data/prices",
-                                    from = "2010-01-01", to = "2025-01-01") {
+                                    from = adl_config$from, to = adl_config$to) {
   dir.create(cache, recursive = TRUE, showWarnings = FALSE)
   result <- setNames(vector("list", length(symbols)), symbols)
   for (symbol in symbols) {

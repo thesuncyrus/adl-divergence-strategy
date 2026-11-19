@@ -1,3 +1,4 @@
+source("config.R")
 # Price-volume indicators used by the ADL strategy.
 Accumulation_Distribution_Line <- function(stock_data) {
   multiplier <- ((quantmod::Cl(stock_data) - quantmod::Lo(stock_data)) -
@@ -16,13 +17,13 @@ mySMA <- function(stock_data, n) {
   result
 }
 
-delt_price <- function(stock_data, n = 120) {
+delt_price <- function(stock_data, n = adl_config$default_window) {
   change <- quantmod::Delt(mySMA(quantmod::Ad(stock_data), n))
   change[1] <- 0
   change
 }
 
-delt_ADL <- function(stock_data, n = 120) {
+delt_ADL <- function(stock_data, n = adl_config$default_window) {
   change <- quantmod::Delt(mySMA(stock_data$ADL, n))
   change[1] <- 0
   change
