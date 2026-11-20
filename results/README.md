@@ -5,6 +5,4 @@
 
 `mean_percent_positive` is an unweighted average of each stock's percentage of positive closed trades. It is not a pooled trade win rate. `mean_ann_sharpe_field` is the mean of `tradeStats`' P&L-based `Ann.Sharpe` field, not daily account-return Sharpe. `mean_profit_to_max_draw` is the mean per-stock profit-to-maximum-drawdown ratio.
 
-Mean metrics should not be interpreted as the corresponding statistic computed on the combined portfolio. No 40-stock ticker list accompanies the source presentation.
-
 Local analysis results are written under `outputs/`, including per-stock trade tables and a separately named daily-account-return Sharpe statistic.

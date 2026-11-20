@@ -15,7 +15,7 @@ The executable analysis uses **KO, NVDA, AMZN, IBM and GOOG**, with daily Yahoo 
 1. Compute the money-flow multiplier `((Close−Low)−(High−Close))/(High−Low)`, multiply by volume, and cumulatively sum it to obtain ADL. Bars with zero high–low range contribute zero.
 2. Smooth adjusted close and ADL with simple moving averages. Compute the one-observation percentage change of each smoothed series.
 3. Enter long when the smoothed price change is negative and the smoothed ADL change is positive; exit when the signs reverse. Signals trigger when the divergence condition first becomes true.
-4. Use market orders at the next available opening price, adding 1,000 shares per entry and closing all shares on an exit. Initial account equity is $1,000,000. Transaction costs and a position-size cap are not specified in this experiment.
+4. Use market orders at the next available opening price, adding 1,000 shares per entry and closing all shares on an exit. Initial account equity is $1,000,000. The backtest uses gross trading P&L.
 5. Compare windows of **5, 30, 60, 120 and 365 trading observations**, using the same backtest period. The selected source-code configuration uses 120 observations.
 
 ## Project results
@@ -29,18 +29,15 @@ The following table comes from the team's presentation. Values are **unweighted 
 | 120 | 77.364% | 9.2 | 10.53 |
 | 365 | 76.67% | 2.8 | 6.05 |
 
-The 120-observation configuration improves the reported mean win rate and risk-adjusted trade statistic relative to the 5-observation configuration, while producing fewer trades. It does not dominate every measure: the 365-observation setting has a higher mean profit-to-maximum-drawdown ratio.
+The 120-observation configuration improves the reported mean win rate and risk-adjusted trade statistic relative to the 5-observation configuration, while producing fewer trades. The 365-observation setting has a higher mean profit-to-maximum-drawdown ratio.
 
 ![Moving-average window comparison](figures/window-comparison.svg)
 
-The presentation also compares the five-stock configuration with a 40-stock configuration at 120 observations: mean winning-trade percentages are 77.364% and 61.18%, respectively. The 40-stock ticker list is not included in the supplied project materials. The runnable configuration in this repository is the five-stock analysis; the broader comparison is retained in `results/project-variant-comparison.csv` as a team-reported result.
+The presentation also compares the five-stock configuration with a 40-stock configuration at 120 observations: mean winning-trade percentages are 77.364% and 61.18%, respectively. The runnable configuration in this repository is the five-stock analysis; the broader comparison is retained in `results/project-variant-comparison.csv` as a team-reported result.
 
-`results/project-five-stock-statistics.csv` contains the saved five-stock output table from the project HTML. `results/project-variant-comparison.csv` transcribes the presentation's window and stock-universe tables. Their source labels distinguish these project tables from outputs produced by a local run. Yahoo can revise past adjusted prices, so new runs need not be numerically identical to the project tables.
+`results/project-five-stock-statistics.csv` contains the saved five-stock output table from the project HTML. `results/project-variant-comparison.csv` transcribes the presentation's window and stock-universe tables. Their source labels distinguish these project tables from outputs produced by a local run.
 
-## Evaluation
-The presentation's `Ann.Sharpe` comes from `blotter::tradeStats()` with `inclZeroDays = FALSE`: it annualizes mean daily trading P&L divided by its standard deviation on selected nonzero-P&L days. It is **not** the Sharpe ratio of daily account returns. The runner exports both definitions separately and never substitutes one for the other.
-
-Parameter selection uses the same 2010–2024 backtest sample. These comparisons evaluate the sample's sensitivity to settings; they do not establish performance on a separate test period. The smoothed ADL signal uses percentage changes even when ADL is negative. Fixed-share additions, corporate-action conventions, costs and exposure assumptions affect interpretation.
+The reported `Ann.Sharpe` uses `blotter::tradeStats()` with `inclZeroDays = FALSE`. It annualizes the ratio of mean daily trading P&L to its standard deviation on nonzero-P&L days. The runner exports this statistic and the Sharpe ratio of daily account returns separately.
 
 ## Run
 From the repository root:
@@ -67,4 +64,4 @@ The runner writes trade statistics, transactions, account equity, distinct risk-
 - `tests/test_indicators.R`: manual ADL example, independent indicator comparison, temporal smoothing and signal checks.
 - `results/`: project comparison tables with explicit metric definitions.
 
-[Portfolio case study](https://chau-nguyen-research.gabledmango1.chatgpt.site/adl.html) · [quantstrat](https://github.com/braverock/quantstrat) · [blotter tradeStats definition](https://github.com/braverock/blotter/blob/dddb448f7a5d6eb63dfbe421ba80779e820a3601/R/tradeStats.R)
+[Portfolio case study](https://thesuncyrus.github.io/adl.html) · [quantstrat](https://github.com/braverock/quantstrat) · [blotter tradeStats definition](https://github.com/braverock/blotter/blob/dddb448f7a5d6eb63dfbe421ba80779e820a3601/R/tradeStats.R)
